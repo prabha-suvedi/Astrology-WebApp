@@ -1,42 +1,30 @@
-import { connectDB } from "@/lib/mongodb"; // Use named import
-import { compare } from "bcrypt";
+import mongoose from "mongoose";
 
-export async function POST(request) {
+const userDB_URI = process.env.MONGODB_USER_URI || "mongodb://localhost:27017/userDB";
+const kundaliDB_URI = process.env.MONGODB_KUNDALI_URI || "mongodb://localhost:27017/kundali-matching";
+
+const connections = {};
+
+export async function connectDB(dbName = "userDB") {
   try {
-    const { email, password } = await request.json();
-
-    
-    const dbConnection = await connectDB("userDB"); // Connect to the "userDB" database
-    const db = dbConnection.db; // Access the database
-
-    // Check if user exists
-    const user = await db.collection("users").findOne({ email });
-    if (!user) {
-      return new Response(
-        JSON.stringify({ error: "User not found." }),
-        { status: 401 }
-      );
+    if (connections[dbName]) {
+      console.log(`✅ Using existing connection for ${dbName}`);
+      return connections[dbName];
     }
 
-    // Compare password with the stored passwordHash
-    const isMatch = await compare(password, user.passwordHash);
-    if (!isMatch) {
-      return new Response(
-        JSON.stringify({ error: "Invalid credentials." }),
-        { status: 401 }
-      );
-    }
+    const dbURI = dbName === "kundali-matching" ? kundaliDB_URI : userDB_URI;
 
-    
-    return new Response(
-      JSON.stringify({ message: "Sign in successful!" }),
-      { status: 200 }
-    );
-  } catch (err) {
-    console.error(err);
-    return new Response(
-      JSON.stringify({ error: "Internal server error." }),
-      { status: 500 }
-    );
+    const connection = await mongoose.createConnection(dbURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    connections[dbName] = connection;
+    console.log(`✅ MongoDB connected successfully to ${dbName}`);
+
+    return connection;
+  } catch (error) {
+    console.error(`❌ MongoDB connection error for ${dbName}:`, error);
+    throw new Error(`Failed to connect to MongoDB - ${dbName}`);
   }
 }
