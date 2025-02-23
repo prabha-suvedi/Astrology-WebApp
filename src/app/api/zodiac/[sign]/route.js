@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb"; // Use named import
 import Zodiac from "@/models/Zodiac";
 import { cache } from "react";
 
