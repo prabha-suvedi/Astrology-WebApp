@@ -1,4 +1,4 @@
-import clientPromise from "@/lib/mongodb";
+import { connectDB } from "@/lib/mongodb"; // Use named import
 import { compare } from "bcrypt";
 
 export async function POST(request) {
@@ -6,8 +6,8 @@ export async function POST(request) {
     const { email, password } = await request.json();
 
     // Connect to MongoDB
-    const client = await clientPromise;
-    const db = client.db("mydatabase");  // Replace with your DB name
+    const dbConnection = await connectDB("userDB"); // Connect to the "userDB" database
+    const db = dbConnection.db; // Access the database
 
     // Check if user exists
     const user = await db.collection("users").findOne({ email });
