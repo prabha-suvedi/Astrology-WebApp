@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { connectDB } from "@/lib/mongodb"; // Use named import
 
 const userDB_URI = process.env.MONGODB_USER_URI || "mongodb://localhost:27017/userDB";
 const kundaliDB_URI = process.env.MONGODB_KUNDALI_URI || "mongodb://localhost:27017/kundali-matching";
