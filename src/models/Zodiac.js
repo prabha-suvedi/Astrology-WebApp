@@ -1,10 +1,9 @@
 import mongoose from "mongoose";
 
-const ZodiacSchema = new mongoose.Schema({
+const zodiacSchema = new mongoose.Schema({
   sign: { type: String, required: true, unique: true },
-  prediction: { type: String, required: true },
-}, { timestamps: true });
+  description: { type: String, required: true },
+  // Add other fields as needed
+});
 
-const Zodiac = mongoose.models.Zodiac || mongoose.model("Zodiac", ZodiacSchema);
-
-export default Zodiac;
+export default mongoose.models.Zodiac || mongoose.model("Zodiac", zodiacSchema);
